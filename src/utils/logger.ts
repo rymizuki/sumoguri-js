@@ -1,10 +1,18 @@
 import { LoggerInterface } from '../interfaces'
 import { format as dateTimeFormat } from 'date-fns'
 
-type LogType = 'error' | 'warn' | 'info' | 'debug'
+const logLevels = {
+  error: 4,
+  warn: 3,
+  info: 2,
+  debug: 1
+}
+
+type LogType = keyof typeof logLevels
 type LoggerOptions = {
   tags?: (string | undefined | null)[]
   time?: boolean
+  level?: LogType
 }
 
 export class Logger implements LoggerInterface {
@@ -42,9 +50,13 @@ export class Logger implements LoggerInterface {
       const default_tags = options.tags.filter((tag) => !!tag)
       tags.unshift(...default_tags)
     }
-    if (type === 'debug' && process.env.NODE_ENV === 'production') {
+
+    const logLevel = logLevels[type]
+    const acceptedLogLevel = logLevels[options.level || 'info']
+    if (logLevel < acceptedLogLevel) {
       return
     }
+
     const time = options.time
       ? `[${dateTimeFormat(new Date(), 'MM-dd HH:mm:ss')}]`
       : ''
