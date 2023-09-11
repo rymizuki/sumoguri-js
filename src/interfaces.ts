@@ -77,6 +77,7 @@ export type BrowserInterface<Artifact = AbstractArtifact> = {
     onMoved: (page: PageInterface) => Promise<void>
   ): Promise<void>
   goBack(): Promise<void>
+  close(): Promise<void>
 }
 
 export interface PageInterface {

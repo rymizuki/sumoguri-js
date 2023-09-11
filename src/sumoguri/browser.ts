@@ -56,4 +56,9 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
     await this.scraper.waitForTimeout(this.timeout)
     this.logger.debug(['browser'], 'goback end', {})
   }
+
+  async close(): Promise<void> {
+    await this.scraper.close()
+    this.logger.debug(['browser'], 'close')
+  }
 }
