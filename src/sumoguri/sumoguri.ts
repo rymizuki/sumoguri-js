@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer'
+import puppeteer, { Page, PuppeteerLaunchOptions } from 'puppeteer'
 import {
   AbstractArtifact,
   BrowserTaskFunction,
@@ -20,41 +20,42 @@ export class Sumoguri implements SumoguriInterface {
     const artifact: any = {}
 
     const logger = new Logger({ tags: ['scraper', options.pid] })
-    const scraper = await this.createScraper()
-    const screenshot = new ScreenShot(scraper, options)
-    logger.debug('start scraping')
+    await this.runOnScraper(async (scraper) => {
+      const screenshot = new ScreenShot(scraper, options)
+      logger.debug('start scraping')
 
-    const browser = new ScraperBrowser({
-      scraper,
-      logger,
-      options,
-      screenshot
-    })
-
-    try {
-      await task(browser, {
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
-        artifact,
+      const browser = new ScraperBrowser({
+        scraper,
         logger,
+        options,
         screenshot
       })
-      // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
-      logger.debug('end scraping', { artifact })
-    } catch (error) {
-      logger.error(error, {
-        href: await scraper.evaluate('location.href')
-      })
-      await screenshot.save('error')
-      throw error
-    }
 
+      try {
+        await task(browser, {
+          // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
+          artifact,
+          logger,
+          screenshot
+        })
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
+        logger.debug('end scraping', { artifact })
+      } catch (error) {
+        const message = error instanceof Error ? error.message : `${error}`
+        logger.error(message, {
+          href: await scraper.evaluate('location.href')
+        })
+        await screenshot.save('error')
+        throw error
+      }
+    })
     // eslint-disable-next-line  @typescript-eslint/no-unsafe-return
     return artifact
   }
 
-  private async createScraper() {
+  private async runOnScraper(task: (page: Page) => Promise<void>) {
     // setup browser
-    const options = {}
+    const options: PuppeteerLaunchOptions = { headless: 'new' }
     const browser = await puppeteer.launch(options)
 
     // setup page
@@ -64,6 +65,10 @@ export class Sumoguri implements SumoguriInterface {
     )
     await page.setViewport({ width: 1280, height: 960 })
 
-    return page
+    try {
+      await task(page)
+    } finally {
+      await browser.close()
+    }
   }
 }
