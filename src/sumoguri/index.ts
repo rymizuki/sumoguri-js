@@ -1,0 +1,1 @@
+export { Sumoguri } from './sumoguri'
