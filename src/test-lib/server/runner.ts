@@ -8,13 +8,22 @@ export type ServerOptions = {
 export class Server {
   private options: ServerOptions
   private process: ChildProcess | null = null
+  private server: {
+    port: number
+    host: string
+  } | null = null
 
   constructor(options: ServerOptions = {}) {
     this.options = options
   }
 
-  async listen(port = 8080, host?: string) {
+  get uri() {
+    return `http://${this.server.host}:${this.server.port}`
+  }
+
+  async listen(port = 0, host?: string): Promise<void> {
     const source = this.options.serverPath || join(__dirname, './server.js')
+
     this.process = fork(source)
     this.process.send(
       JSON.stringify({
@@ -25,20 +34,30 @@ export class Server {
         if (error) console.error(error)
       }
     )
+
     return new Promise((resolve) => {
-      this.process.on('message', () => {
-        console.log(`server wake-up on http://${host || 'localhost'}:${port}`)
+      this.process.on('message', (message) => {
+        // eslint-disable-next-line
+        const { payload } = JSON.parse(message.toString()) as any
+        // eslint-disable-next-line
+        const { port, host } = payload as { host: string; port: number }
+        this.server = { port, host }
         resolve(undefined)
       })
     })
   }
 
-  close() {
+  async close(): Promise<void> {
     if (!this.process) {
       throw new Error('Server is not started.')
     }
-    this.process.kill()
-    this.process = null
+    return new Promise((resolve) => {
+      this.process.on('close', () => {
+        resolve(undefined)
+      })
+      this.process.kill('SIGHUP')
+      this.process = null
+    })
   }
 }
 
