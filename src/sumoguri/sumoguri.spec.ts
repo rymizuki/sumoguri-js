@@ -30,8 +30,8 @@ describe('Sumoguri', () => {
       beforeEach(async () => {
         await server.listen()
       })
-      afterEach(() => {
-        server.close()
+      afterEach(async () => {
+        await server.close()
       })
       it('should be return artifact', async () => {
         const instance = runner.variable('instance')
@@ -56,7 +56,7 @@ describe('Sumoguri', () => {
             })
           },
           {
-            origin: 'http://localhost:8080'
+            origin: server.uri
           }
         )
         expect(artifact).toStrictEqual({
