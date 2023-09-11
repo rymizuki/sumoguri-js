@@ -1,9 +1,9 @@
 import { join } from 'path'
-import { Server } from '../test-lib/server'
 import { createRunner } from '../test-lib/runner'
+import { createServer } from '../test-lib/server/runner'
 import { Sumoguri } from './sumoguri'
 
-const server = new Server({
+const server = createServer({
   serverPath: join(process.cwd(), 'src/test/server.js')
 })
 

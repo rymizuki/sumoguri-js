@@ -41,3 +41,7 @@ export class Server {
     this.process = null
   }
 }
+
+export function createServer(options?: ServerOptions) {
+  return new Server(options)
+}
