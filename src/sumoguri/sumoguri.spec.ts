@@ -1,13 +1,13 @@
 import { join } from 'path'
-import { TestRunner } from '../test-lib/runner'
 import { Server } from '../test-lib/server'
+import { createRunner } from '../test-lib/runner'
 import { Sumoguri } from './sumoguri'
 
 const server = new Server({
   serverPath: join(process.cwd(), 'src/test/server.js')
 })
 
-const runner = new TestRunner<{
+const runner = createRunner<{
   instance: Sumoguri
 }>()
 

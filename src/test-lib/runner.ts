@@ -1,7 +1,6 @@
-export class TestRunner<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Variables extends { [name: string]: any }
-> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TestRunnerVariables = { [name: string]: any }
+export class TestRunner<Variables extends TestRunnerVariables> {
   private variables: Partial<Variables>
 
   constructor() {
@@ -27,4 +26,8 @@ export class TestRunner<
   reset() {
     this.variables = {}
   }
+}
+
+export function createRunner<V extends TestRunnerVariables>() {
+  return new TestRunner<V>()
 }
