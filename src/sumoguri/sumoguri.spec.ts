@@ -1,6 +1,5 @@
 import { join } from 'path'
-import { createRunner } from '../test-lib/runner'
-import { createServer } from '../test-lib/server/runner'
+import { createRunner, createServer } from '../test-lib'
 import { Sumoguri } from './sumoguri'
 
 const server = createServer({
