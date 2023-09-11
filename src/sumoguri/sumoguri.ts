@@ -10,18 +10,31 @@ import { ScreenShot } from '../utils/screenshot'
 import { ScraperBrowser } from './browser'
 
 export class Sumoguri implements SumoguriInterface {
-  constructor() {}
+  private defaults: SumoguriRunOptions
+
+  constructor(options: SumoguriRunOptions = {}) {
+    this.defaults = options
+  }
 
   async run<Artifact = AbstractArtifact>(
     task: BrowserTaskFunction<Artifact>,
-    options: SumoguriRunOptions = {}
+    args: SumoguriRunOptions = {}
   ): Promise<Artifact> {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     const artifact: any = {}
+    const options = Object.assign(
+      {},
+      this.defaults,
+      args
+    )
 
     const logger = new Logger({ tags: ['scraper', options.pid] })
     await this.runOnScraper(async (scraper) => {
-      const screenshot = new ScreenShot(scraper, options)
+      const { screenshot_dirname, screenshot_prefix } = options
+      const screenshot = new ScreenShot(scraper, {
+        screenshot_dirname,
+        screenshot_prefix
+      })
       logger.debug('start scraping')
 
       const browser = new ScraperBrowser({
