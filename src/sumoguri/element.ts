@@ -35,4 +35,8 @@ export class ScraperElement implements ElementInterface {
   find(selector: string): Cheerio<AnyNode> {
     return this.$(selector)
   }
+
+  text() {
+    return this.find(':root').text()
+  }
 }

@@ -148,4 +148,9 @@ export interface ElementInterface {
    * @param selector
    */
   find(selector: string): Cheerio<AnyNode>
+
+  /**
+   * 要素のテキストを返す
+   */
+  text(): string | null
 }
