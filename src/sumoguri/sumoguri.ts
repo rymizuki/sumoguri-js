@@ -23,7 +23,9 @@ export class Sumoguri implements SumoguriInterface {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     const artifact: any = {}
     const options = Object.assign(
-      {},
+      {
+        puppeteer: { headless: 'new' }
+      },
       this.defaults,
       args
     )
@@ -32,7 +34,7 @@ export class Sumoguri implements SumoguriInterface {
       tags: ['scraper', options.pid],
       level: options.logLevel
     })
-    await this.runOnScraper(async (scraper) => {
+    await this.runOnScraper(options.puppeteer, async (scraper) => {
       const { screenshot_dirname, screenshot_prefix } = options
       const screenshot = new ScreenShot(scraper, {
         screenshot_dirname,
@@ -69,9 +71,11 @@ export class Sumoguri implements SumoguriInterface {
     return artifact
   }
 
-  private async runOnScraper(task: (page: Page) => Promise<void>) {
+  private async runOnScraper(
+    options: PuppeteerLaunchOptions,
+    task: (page: Page) => Promise<void>
+  ) {
     // setup browser
-    const options: PuppeteerLaunchOptions = { headless: 'new' }
     const browser = await puppeteer.launch(options)
 
     // setup page
