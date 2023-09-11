@@ -17,6 +17,7 @@ createServer((app) => {
   <li class="list-item">item 3</li>
 </ul>
 
+<a href="?page=2" class="button-next">next</a>
 <button class="button">button</button>
 </body>
 </html>
