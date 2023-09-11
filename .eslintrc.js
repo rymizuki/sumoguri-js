@@ -16,10 +16,11 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking'
   ],
+  ignorePatterns: ['src/**/*.js'],
   rules: {},
   overrides: [
     {
-      files: ['**/*.{spec,test}.{js,ts,tsx}'],
+      files: ['**/*.{spec,test}.{ts,tsx}'],
       env: {
         jest: true
       }
