@@ -10,11 +10,19 @@ module.exports = {
     ecmaVersion: 2023,
     project: ['./tsconfig.eslint.json']
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'jest'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking'
   ],
-  rules: {}
+  rules: {},
+  overrides: [
+    {
+      files: ['**/*.{spec,test}.{js,ts,tsx}'],
+      env: {
+        jest: true
+      }
+    }
+  ]
 }
