@@ -9,8 +9,6 @@ import { Logger } from '../utils/logger'
 import { ScreenShot } from '../utils/screenshot'
 import { ScraperBrowser } from './browser'
 
-export const ScraperIdentity = Symbol.for('Scraper')
-
 export class Sumoguri implements SumoguriInterface {
   constructor() {}
 
