@@ -1,5 +1,5 @@
 import { AnyNode, Cheerio } from 'cheerio'
-import { Page } from 'puppeteer'
+import { Page, PuppeteerLaunchOptions } from 'puppeteer'
 import { LoggerOptions } from './utils/logger'
 
 type LoggerLogContents = {
@@ -41,6 +41,7 @@ export type SumoguriRunOptions = {
   screenshot_prefix?: string
   screenshot_dirname?: string
   logLevel?: LoggerOptions['level']
+  puppeteer?: PuppeteerLaunchOptions
 }
 
 export interface SumoguriInterface {
