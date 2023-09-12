@@ -1,9 +1,13 @@
 import { join } from 'path'
-import { createRunner, createServer } from '../test-lib'
+import { createServer, createVariables } from '../test-lib'
 import { Sumoguri } from './sumoguri'
 
-const runner = createRunner<{
+const vars = createVariables<{
   instance: Sumoguri
+  items: string[]
+  href: string
+  fragment: string
+  matched: boolean
 }>()
 const server = createServer({
   serverPath: join(process.cwd(), 'src/test/server.js')
@@ -11,7 +15,7 @@ const server = createServer({
 
 describe('Page', () => {
   afterEach(() => {
-    runner.reset()
+    vars.reset()
   })
 
   beforeEach(async () => {
@@ -22,18 +26,13 @@ describe('Page', () => {
   })
 
   beforeEach(() => {
-    runner.variable(
-      'instance',
-      new Sumoguri({
-        origin: server.uri
-      })
-    )
+    vars.set('instance', new Sumoguri({ origin: server.uri }))
   })
 
   describe('action', () => {
     const action = (path: string, selector: string) => {
       return async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         const { items } = await instance.run<{ items: string[] }>(
           async (browser, { artifact }) => {
             artifact.items = []
@@ -45,39 +44,35 @@ describe('Page', () => {
             })
           }
         )
-        runner.variable('items', items)
+        vars.set('items', items)
       }
     }
 
     describe('single element', () => {
       beforeEach(action('/example', 'h1'))
       it('should be 1 element found', () => {
-        expect(runner.variable('items')).toStrictEqual(['Example Page'])
+        expect(vars.get('items')).toStrictEqual(['Example Page'])
       })
     })
 
     describe('multiple element', () => {
       beforeEach(action('/example', '.list-item'))
       it('should be multiple elements found', () => {
-        expect(runner.variable('items')).toStrictEqual([
-          'item 1',
-          'item 2',
-          'item 3'
-        ])
+        expect(vars.get('items')).toStrictEqual(['item 1', 'item 2', 'item 3'])
       })
     })
 
     describe('undefined element', () => {
       beforeEach(action('/example', '.not-exists-element'))
       it('should be 0 elements found', () => {
-        expect(runner.variable('items')).toStrictEqual([])
+        expect(vars.get('items')).toStrictEqual([])
       })
     })
   })
 
   describe('getLocationPath', () => {
     beforeEach(async () => {
-      const instance = runner.variable('instance')
+      const instance = vars.get('instance')
       const { href } = await instance.run<{ href: string }>(
         async (browser, { artifact }) => {
           await browser.move('/example?page=1#description', async (page) => {
@@ -86,10 +81,10 @@ describe('Page', () => {
           })
         }
       )
-      runner.variable('href', href)
+      vars.set('href', href)
     })
     it('should be current uri', () => {
-      expect(runner.variable('href')).toEqual(
+      expect(vars.get('href')).toEqual(
         `${server.uri}/example?page=1#description`
       )
     })
@@ -98,7 +93,7 @@ describe('Page', () => {
   describe('getLocationPathFragment', () => {
     const matcher = (path: string, regexp: RegExp) => {
       return async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         const { fragment } = await instance.run<{ fragment: string | null }>(
           async (browser, { artifact }) => {
             await browser.move(path, async (page) => {
@@ -107,20 +102,20 @@ describe('Page', () => {
             })
           }
         )
-        runner.variable('fragment', fragment)
+        vars.set('fragment', fragment)
       }
     }
 
     describe('on match', () => {
       beforeEach(matcher('/example?page=1', /\?page=([0-9]+)/))
       it('should be got fragment', () => {
-        expect(runner.variable('fragment')).toEqual('1')
+        expect(vars.get('fragment')).toEqual('1')
       })
     })
     describe('on un-match', () => {
       beforeEach(matcher('/example?page=1', /\?page=([a-z]+)/))
       it('should be got fragment', () => {
-        expect(runner.variable('fragment')).toEqual(null)
+        expect(vars.get('fragment')).toEqual(null)
       })
     })
   })
@@ -130,7 +125,7 @@ describe('Page', () => {
       it(
         'should be wait for display element',
         async () => {
-          const instance = runner.variable('instance')
+          const instance = vars.get('instance')
           await instance.run(async (browser) => {
             await browser.move('/example', async (page) => {
               await page.wait('.lazy-element')
@@ -147,7 +142,7 @@ describe('Page', () => {
       it(
         'should be wait for timeout',
         async () => {
-          const instance = runner.variable('instance')
+          const instance = vars.get('instance')
           await instance.run(async (browser) => {
             await browser.move('/example', async (page) => {
               // 現在時刻を記録（秒）
@@ -168,7 +163,7 @@ describe('Page', () => {
   describe('isMatchLocation', () => {
     const matcher = (path: string, regexp: RegExp) => {
       return async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         const { matched } = await instance.run<{ matched: boolean }>(
           async (browser, { artifact }) => {
             await browser.move(path, async (page) => {
@@ -177,19 +172,19 @@ describe('Page', () => {
             })
           }
         )
-        runner.variable('matched', matched)
+        vars.set('matched', matched)
       }
     }
     describe('on match', () => {
       beforeEach(matcher('/example?page=1#description', /page=([0-1]+)/))
       it('should be true', () => {
-        expect(runner.variable('matched')).toBeTruthy()
+        expect(vars.get('matched')).toBeTruthy()
       })
     })
     describe('on un-match', () => {
       beforeEach(matcher('/example?page=1#description', /page=([a-z]+)/))
       it('should be true', () => {
-        expect(runner.variable('matched')).toBeFalsy()
+        expect(vars.get('matched')).toBeFalsy()
       })
     })
   })
@@ -197,7 +192,7 @@ describe('Page', () => {
   describe('hasElement', () => {
     const matcher = (path: string, selector: string) => {
       return async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         const { matched } = await instance.run<{ matched: boolean }>(
           async (browser, { artifact }) => {
             await browser.move(path, async (page) => {
@@ -206,20 +201,20 @@ describe('Page', () => {
             })
           }
         )
-        runner.variable('matched', matched)
+        vars.set('matched', matched)
       }
     }
 
     describe('on exists', () => {
       beforeEach(matcher('/example', '.list'))
       it('should be true', () => {
-        expect(runner.variable('matched')).toBeTruthy()
+        expect(vars.get('matched')).toBeTruthy()
       })
     })
     describe('on not exists', () => {
       beforeEach(matcher('/example', '.not-exists-element'))
       it('should be false', () => {
-        expect(runner.variable('matched')).toBeFalsy()
+        expect(vars.get('matched')).toBeFalsy()
       })
     })
   })

@@ -1,9 +1,9 @@
 import { join } from 'path'
-import { createRunner, createServer } from '../test-lib'
+import { createServer, createVariables } from '../test-lib'
 import { Sumoguri } from './sumoguri'
 import { BrowserTaskFunction, SumoguriRunOptions } from '../interfaces'
 
-const runner = createRunner<{
+const vars = createVariables<{
   instance: Sumoguri
   origin: string
   options: SumoguriRunOptions
@@ -15,32 +15,26 @@ const server = createServer({
 
 describe('Browser', () => {
   beforeEach(() => {
-    runner.reset()
+    vars.reset()
   })
   beforeEach(async () => {
     await server.listen()
-    runner.variable('origin', server.uri)
   })
   afterEach(async () => {
     await server.close()
   })
 
   beforeEach(() => {
-    runner.variable(
-      'instance',
-      new Sumoguri({
-        origin: runner.variable('origin')
-      })
-    )
+    vars.set('instance', new Sumoguri({ origin: server.uri }))
   })
 
   describe('move', () => {
     it('should be open specified url', async () => {
-      const instance = runner.variable('instance')
+      const instance = vars.get('instance')
       await instance.run(async (browser) => {
         await browser.move('/example', async (page) => {
           const uri = await page.getLocationPath()
-          expect(uri).toBe(`${runner.variable('origin')}/example`)
+          expect(uri).toBe(`${server.uri}/example`)
         })
       })
     })
@@ -58,7 +52,7 @@ describe('Browser', () => {
         })
       }
 
-      const instance = runner.variable('instance')
+      const instance = vars.get('instance')
       const results = await instance.run<{ messages: string[] }>(
         async (browser, context) => {
           context.artifact.messages = []
@@ -78,7 +72,7 @@ describe('Browser', () => {
     it(
       'should be back previous page',
       async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         const task: BrowserTaskFunction<{ history: string[] }> = async (
           browser,
           { artifact }
@@ -102,9 +96,9 @@ describe('Browser', () => {
           puppeteer: { headless: true }
         })
         expect(history).toStrictEqual([
-          `${runner.variable('origin')}/example?page=1`,
-          `${runner.variable('origin')}/example?page=2`,
-          `${runner.variable('origin')}/example?page=1`
+          `${server.uri}/example?page=1`,
+          `${server.uri}/example?page=2`,
+          `${server.uri}/example?page=1`
         ])
       },
       40 * 1000
@@ -113,7 +107,7 @@ describe('Browser', () => {
 
   describe('close', () => {
     it('should be close session, could not continue task', async () => {
-      const instance = runner.variable('instance')
+      const instance = vars.get('instance')
       await instance.run(async (browser) => {
         await browser.close()
 

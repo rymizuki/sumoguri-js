@@ -1,18 +1,18 @@
 import { join } from 'path'
-import { createRunner, createServer } from '../test-lib'
+import { createServer, createVariables } from '../test-lib'
 import { Sumoguri } from './sumoguri'
 
 const server = createServer({
   serverPath: join(process.cwd(), 'src/test/server.js')
 })
 
-const runner = createRunner<{
+const vars = createVariables<{
   instance: Sumoguri
 }>()
 
 describe('Sumoguri', () => {
-  beforeEach(() => {
-    runner.reset()
+  afterEach(() => {
+    vars.reset()
   })
 
   describe('new Sumoguri()', () => {
@@ -23,7 +23,7 @@ describe('Sumoguri', () => {
   })
   describe('run', () => {
     beforeEach(() => {
-      runner.variable('instance', new Sumoguri())
+      vars.set('instance', new Sumoguri())
     })
 
     describe('on success case', () => {
@@ -34,7 +34,7 @@ describe('Sumoguri', () => {
         await server.close()
       })
       it('should be return artifact', async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         const artifact = await instance.run<{
           title: string
           message: string
@@ -68,7 +68,7 @@ describe('Sumoguri', () => {
     })
     describe('on exception case', () => {
       it('should caught error instance', async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         await expect(async () => {
           await instance.run(
             async (browser) => {

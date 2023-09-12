@@ -1,9 +1,9 @@
 import { join } from 'path'
 import { ElementInterface } from '../interfaces'
-import { createRunner, createServer } from '../test-lib'
+import { createServer, createVariables } from '../test-lib'
 import { Sumoguri } from './sumoguri'
 
-const runner = createRunner<{
+const vars = createVariables<{
   instance: Sumoguri
   value: string | string[]
   element: ReturnType<ElementInterface['find']>
@@ -14,7 +14,7 @@ const server = createServer({
 
 describe('Element', () => {
   afterEach(() => {
-    runner.reset()
+    vars.reset()
   })
 
   beforeEach(async () => {
@@ -25,13 +25,13 @@ describe('Element', () => {
   })
 
   beforeEach(() => {
-    runner.variable('instance', new Sumoguri({ origin: server.uri }))
+    vars.set('instance', new Sumoguri({ origin: server.uri }))
   })
 
   describe('click', () => {
     describe('with selector', () => {
       beforeEach(async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         await instance.run(async (browser) => {
           await browser.move('/example', async (page) => {
             await page.action('form', async (element) => {
@@ -54,7 +54,7 @@ describe('Element', () => {
     })
     describe('without selector', () => {
       beforeEach(async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         await instance.run(async (browser) => {
           await browser.move('/example', async (page) => {
             await page.action('button[type="submit"]', async (element) => {
@@ -80,7 +80,7 @@ describe('Element', () => {
   describe('input', () => {
     const input = (path: string, name: string, input: string) => {
       return async () => {
-        const instance = runner.variable('instance')
+        const instance = vars.get('instance')
         await instance.run(async (browser) => {
           await browser.move(path, async (page) => {
             await page.action('form', async (element) => {
@@ -111,8 +111,8 @@ describe('Element', () => {
   describe('find', () => {
     const find = (path: string, selector: string) => {
       return async () => {
-        const { element } = await runner
-          .variable('instance')
+        const { element } = await vars
+          .get('instance')
           .run<{ element: ReturnType<ElementInterface['find']> }>(
             async (browser, { artifact }) => {
               await browser.move(path, async (page) => {
@@ -122,26 +122,26 @@ describe('Element', () => {
               })
             }
           )
-        runner.variable('element', element)
+        vars.set('element', element)
       }
     }
     describe('on found element', () => {
       beforeEach(find('/example', 'a[href]'))
       describe('.text()', () => {
         it('should be textNode value', () => {
-          expect(runner.variable('element').text()).toBe('next')
+          expect(vars.get('element').text()).toBe('next')
         })
       })
       describe('.attr(name)', () => {
         it('should be attribute value', () => {
-          expect(runner.variable('element').attr('href')).toBe('?page=2')
+          expect(vars.get('element').attr('href')).toBe('?page=2')
         })
       })
     })
     describe('on not found element', () => {
       beforeEach(find('/example', '.not-exists-element'))
       it('should be empty object', () => {
-        expect(runner.variable('element').length).toBe(0)
+        expect(vars.get('element').length).toBe(0)
       })
     })
   })
@@ -149,8 +149,8 @@ describe('Element', () => {
   describe('text', () => {
     const text = (path: string, selector: string) => {
       return async () => {
-        const { value } = await runner
-          .variable('instance')
+        const { value } = await vars
+          .get('instance')
           .run<{ value: string }>(async (browser, { artifact }) => {
             await browser.move(path, async (page) => {
               await page.action(selector, (element) => {
@@ -158,13 +158,13 @@ describe('Element', () => {
               })
             })
           })
-        runner.variable('value', value)
+        vars.set('value', value)
       }
     }
     describe('on found element', () => {
       beforeEach(text('/example', '.message'))
       it('should be text value', () => {
-        expect(runner.variable('value')).toBe('hello world')
+        expect(vars.get('value')).toBe('hello world')
       })
     })
   })
