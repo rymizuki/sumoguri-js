@@ -26,5 +26,7 @@ module.exports = {
       lines: 87,
       statements: 84
     }
-  }
+  },
+  coverageReporters: ['text', 'json-summary'],
+  reporters: ['default', 'jest-junit']
 }

@@ -18,3 +18,7 @@ jobs:
 
       - run: npm run lint
       - run: npm test
+      - name: save coverage comment
+        uses: MishaKav/jest-coverage-comment@v1.0.23
+        with:
+          coverage-summary-path: ./coverage/coverage-summary.json
