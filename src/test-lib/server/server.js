@@ -6,6 +6,19 @@ class Server {
     const app = express()
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
+    app.use((req, res, next) => {
+      process.send(
+        JSON.stringify({
+          type: 'request',
+          payload: {
+            path: req.path,
+            method: req.method,
+            body: req.body
+          }
+        })
+      )
+      next()
+    })
 
     createServer(app)
 
