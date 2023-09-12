@@ -67,9 +67,7 @@ export class ScraperPage implements PageInterface {
   }
 
   async isMatchLocation(regexp: RegExp): Promise<boolean> {
-    const href = await this.scraper.evaluate(() => {
-      return location.href
-    })
+    const href = await this.getLocationPath()
     return regexp.test(href)
   }
 
