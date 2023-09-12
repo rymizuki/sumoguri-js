@@ -1,10 +1,14 @@
-const connect = require('connect')
+const express = require('express')
 const http = require('http')
 
 class Server {
   constructor(createServer) {
-    const app = connect()
+    const app = express()
+    app.use(express.json())
+    app.use(express.urlencoded({ extended: true }))
+
     createServer(app)
+
     this.server = http.createServer(app)
   }
 
