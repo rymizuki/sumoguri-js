@@ -2,6 +2,11 @@ import { ChildProcess, Serializable, fork } from 'child_process'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 
+type RequestRecord = {
+  method: string
+  path: string
+  body: unknown
+}
 
 export type ServerOptions = {
   serverPath?: string
@@ -14,6 +19,7 @@ export class Server extends EventEmitter {
     port: number
     host: string
   } | null = null
+  private requestLog: RequestRecord[] = []
 
   constructor(options: ServerOptions = {}) {
     super()
@@ -75,6 +81,17 @@ export class Server extends EventEmitter {
         const { port, host } = payload as { host: string; port: number }
         this.server = { port, host }
         this.emit('listen')
+        break
+      }
+      case 'request': {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { path, method, body } = payload as {
+          path: string
+          method: string
+          body: unknown
+        }
+        this.requestLog.push({ path, method, body })
+        this.emit('request')
         break
       }
     }
