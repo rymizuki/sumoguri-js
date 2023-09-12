@@ -69,6 +69,25 @@ export class Server extends EventEmitter {
     })
   }
 
+  match<T = unknown>(method: string, path: string) {
+    const request = ([] as RequestRecord[])
+      .concat(this.requestLog)
+      .reverse()
+      .find((req) => req.method === method && req.path === path)
+    if (!request) {
+      return null
+    }
+    return {
+      method: request.method,
+      path: request.path,
+      body: request.body as T
+    }
+  }
+
+  clearRequestLog() {
+    this.requestLog = []
+  }
+
   private onMessage(message: Serializable) {
     if (typeof message !== 'string') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
