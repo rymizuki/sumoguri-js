@@ -1,15 +1,15 @@
 {
   "name": "sumoguri",
   "version": "0.0.0",
-  "description": "",
+  "description": "A wrapper for puppeteer to explore complex websites.",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --coverage",
     "build": "tsc --build ./tsconfig.build.json",
     "lint": "eslint src/**/*.ts"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "ry.mizuki@gmail.com",
+  "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "date-fns": "^2.30.0",
@@ -31,5 +31,20 @@
     "ts-node": "^10.9.1",
     "typesafe-utils": "^1.16.2",
     "typescript": "^5.2.2"
-  }
+  },
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rymizuki/sumoguri-js.git"
+  },
+  "keywords": [
+    "puppetter"
+  ],
+  "bugs": {
+    "url": "https://github.com/rymizuki/sumoguri-js/issues"
+  },
+  "homepage": "https://github.com/rymizuki/sumoguri-js#readme",
+  "files": [
+    "dist"
+  ]
 }
