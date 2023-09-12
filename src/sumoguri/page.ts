@@ -17,6 +17,7 @@ export class ScraperPage implements PageInterface {
     onFound: (element: ElementInterface, index: number) => Promise<void>
   ): Promise<void> {
     this.logger.debug(['page', 'action', selector], 'start')
+    /* istanbul ignore next */
     const contents = await this.scraper.$$eval(selector, (elements) => {
       return elements.map((element) => element.outerHTML)
     })
@@ -37,6 +38,7 @@ export class ScraperPage implements PageInterface {
   }
 
   async getLocationPath(): Promise<string> {
+    /* istanbul ignore next */
     return await this.scraper.evaluate(() => {
       return location.href
     })

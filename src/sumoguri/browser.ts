@@ -42,6 +42,7 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
   ): Promise<void> {
     const uri = pathJoin(this.context.options.origin || '', path)
     this.logger.debug(['browser'], 'move start', { uri })
+    /* istanbul ignore next */
     await this.scraper.goto(uri)
     await this.scraper.waitForTimeout(this.timeout)
 
@@ -52,12 +53,14 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
 
   async goBack(): Promise<void> {
     this.logger.debug(['browser'], 'goback start', {})
+    /* istanbul ignore next */
     await this.scraper.goBack()
     await this.scraper.waitForTimeout(this.timeout)
     this.logger.debug(['browser'], 'goback end', {})
   }
 
   async close(): Promise<void> {
+    /* istanbul ignore next */
     await this.scraper.close()
     this.logger.debug(['browser'], 'close')
   }

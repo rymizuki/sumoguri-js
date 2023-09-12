@@ -158,7 +158,6 @@ describe('Element', () => {
               })
             })
           })
-        console.log('value', value)
         runner.variable('value', value)
       }
     }
