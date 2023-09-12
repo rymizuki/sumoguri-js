@@ -11,12 +11,12 @@ export class TestRunner<Variables extends TestRunnerVariables> {
     name: Name,
     value?: Value
   ): Value {
-    if (value) {
+    if (value !== undefined) {
       this.variables[name] = value
     }
-    if (value !== undefined && this.variables[name] === undefined) {
+    if (value === undefined && this.variables[name] === undefined) {
       throw new Error(
-        'TestRunner.variable(name) is not defined, please before set on use.'
+        `TestRunner.variable(${name}) is not defined, please before set on use.`
       )
     }
     // eslint-disable-next-line  @typescript-eslint/no-unsafe-return
