@@ -66,7 +66,12 @@ export class Server extends EventEmitter {
       })
       this.process.kill('SIGHUP')
       this.process = null
+      this.clearRequestLog()
     })
+  }
+
+  getLastRequest() {
+    return this.requestLog[this.requestLog.length - 1]
   }
 
   match<T = unknown>(method: string, path: string) {
