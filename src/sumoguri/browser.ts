@@ -7,15 +7,16 @@ import {
   PageInterface,
   SumoguriContext
 } from '../interfaces'
-import { ScraperPage } from './page'
+import { Page } from './page'
+import { wait } from '../utils/wait'
 
-export class ScraperBrowser<Artifact = AbstractArtifact>
+export class Browser<Artifact = AbstractArtifact>
   implements BrowserInterface<Artifact>
 {
   private context: SumoguriContext
   private scraper: SumoguriContext['scraper']
   private logger: SumoguriContext['logger']
-  private timeout = 1 * 1000
+  private waitSeconds = 1
 
   constructor(context: SumoguriContext) {
     this.context = context
@@ -42,23 +43,30 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
   ): Promise<void> {
     const uri = pathJoin(this.context.options.origin || '', path)
     this.logger.debug(['browser'], 'move start', { uri })
+    /* istanbul ignore next */
     await this.scraper.goto(uri)
-    await this.scraper.waitForTimeout(this.timeout)
+    await this.waitForTimeout()
 
-    const page = new ScraperPage(this.context)
+    const page = new Page(this.context)
     await onMoved(page)
     this.logger.debug(['browser'], 'move end', { uri })
   }
 
   async goBack(): Promise<void> {
     this.logger.debug(['browser'], 'goback start', {})
+    /* istanbul ignore next */
     await this.scraper.goBack()
-    await this.scraper.waitForTimeout(this.timeout)
+    await this.waitForTimeout()
     this.logger.debug(['browser'], 'goback end', {})
   }
 
   async close(): Promise<void> {
+    /* istanbul ignore next */
     await this.scraper.close()
     this.logger.debug(['browser'], 'close')
+  }
+
+  private async waitForTimeout() {
+    return await wait(this.waitSeconds)
   }
 }

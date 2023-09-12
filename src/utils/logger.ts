@@ -8,8 +8,8 @@ const logLevels = {
   debug: 1
 }
 
-type LogType = keyof typeof logLevels
-type LoggerOptions = {
+export type LogType = keyof typeof logLevels
+export type LoggerOptions = {
   tags?: (string | undefined | null)[]
   time?: boolean
   level?: LogType

@@ -7,24 +7,42 @@ import {
 } from '../interfaces'
 import { Logger } from '../utils/logger'
 import { ScreenShot } from '../utils/screenshot'
-import { ScraperBrowser } from './browser'
+import { Browser } from './browser'
 
 export class Sumoguri implements SumoguriInterface {
-  constructor() {}
+  private defaults: SumoguriRunOptions
+
+  constructor(options: SumoguriRunOptions = {}) {
+    this.defaults = options
+  }
 
   async run<Artifact = AbstractArtifact>(
     task: BrowserTaskFunction<Artifact>,
-    options: SumoguriRunOptions = {}
+    args: SumoguriRunOptions = {}
   ): Promise<Artifact> {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     const artifact: any = {}
+    const options = Object.assign(
+      {
+        puppeteer: { headless: 'new' }
+      },
+      this.defaults,
+      args
+    )
 
-    const logger = new Logger({ tags: ['scraper', options.pid] })
-    await this.runOnScraper(async (scraper) => {
-      const screenshot = new ScreenShot(scraper, options)
+    const logger = new Logger({
+      tags: ['scraper', options.pid],
+      level: options.logLevel
+    })
+    await this.runOnScraper(options.puppeteer, async (scraper) => {
+      const { screenshot_dirname, screenshot_prefix } = options
+      const screenshot = new ScreenShot(scraper, {
+        screenshot_dirname,
+        screenshot_prefix
+      })
       logger.debug('start scraping')
 
-      const browser = new ScraperBrowser({
+      const browser = new Browser({
         scraper,
         logger,
         options,
@@ -53,9 +71,11 @@ export class Sumoguri implements SumoguriInterface {
     return artifact
   }
 
-  private async runOnScraper(task: (page: Page) => Promise<void>) {
+  private async runOnScraper(
+    options: PuppeteerLaunchOptions,
+    task: (page: Page) => Promise<void>
+  ) {
     // setup browser
-    const options: PuppeteerLaunchOptions = { headless: 'new' }
     const browser = await puppeteer.launch(options)
 
     // setup page

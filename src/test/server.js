@@ -17,7 +17,24 @@ createServer((app) => {
   <li class="list-item">item 3</li>
 </ul>
 
-<button class="button">button</button>
+<a href="?page=2" class="button-next">next</a>
+
+<form method="post">
+  <input type="text" name="email">
+  <input type="password" name="password">
+  <button type="submit">submit</submit>
+</form>
+
+<script>
+(() => {
+  const element = document.createElement('div')
+  element.appendChild(document.createTextNode('lazy element'))
+  element.className = 'lazy-element'
+  setTimeout(() => {
+    document.body.appendChild(element)
+  }, 5 * 1000)
+})()
+</script>
 </body>
 </html>
     `)

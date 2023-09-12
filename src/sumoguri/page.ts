@@ -1,7 +1,8 @@
-import { ScraperElement } from './element'
+import { Element } from './element'
 import { ElementInterface, PageInterface, SumoguriContext } from '../interfaces'
+import { wait } from '../utils/wait'
 
-export class ScraperPage implements PageInterface {
+export class Page implements PageInterface {
   private context: SumoguriContext
   private scraper: SumoguriContext['scraper']
   private logger: SumoguriContext['logger']
@@ -17,17 +18,14 @@ export class ScraperPage implements PageInterface {
     onFound: (element: ElementInterface, index: number) => Promise<void>
   ): Promise<void> {
     this.logger.debug(['page', 'action', selector], 'start')
+    /* istanbul ignore next */
     const contents = await this.scraper.$$eval(selector, (elements) => {
       return elements.map((element) => element.outerHTML)
     })
     for (let index = 0; index < contents.length; index++) {
       const content = contents[index]
       const element_selector = `${selector}:nth-of-type(${index + 1})`
-      const element = new ScraperElement(
-        element_selector,
-        content,
-        this.context
-      )
+      const element = new Element(element_selector, content, this.context)
 
       this.logger.debug(['page', 'action', selector, `${index}`], 'start')
       await onFound(element, index)
@@ -37,6 +35,7 @@ export class ScraperPage implements PageInterface {
   }
 
   async getLocationPath(): Promise<string> {
+    /* istanbul ignore next */
     return await this.scraper.evaluate(() => {
       return location.href
     })
@@ -57,19 +56,13 @@ export class ScraperPage implements PageInterface {
       return
     }
     if (typeof input === 'number') {
-      await new Promise((resolve) =>
-        setTimeout(() => {
-          resolve(undefined)
-        }, input)
-      )
+      await wait(input)
       return
     }
   }
 
   async isMatchLocation(regexp: RegExp): Promise<boolean> {
-    const href = await this.scraper.evaluate(() => {
-      return location.href
-    })
+    const href = await this.getLocationPath()
     return regexp.test(href)
   }
 

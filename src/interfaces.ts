@@ -1,5 +1,6 @@
 import { AnyNode, Cheerio } from 'cheerio'
-import { Page } from 'puppeteer'
+import { Page, PuppeteerLaunchOptions } from 'puppeteer'
+import { LoggerOptions } from './utils/logger'
 
 type LoggerLogContents = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,6 +40,8 @@ export type SumoguriRunOptions = {
   pid?: string
   screenshot_prefix?: string
   screenshot_dirname?: string
+  logLevel?: LoggerOptions['level']
+  puppeteer?: PuppeteerLaunchOptions
 }
 
 export interface SumoguriInterface {
