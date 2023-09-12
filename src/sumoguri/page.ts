@@ -1,8 +1,8 @@
-import { ScraperElement } from './element'
+import { Element } from './element'
 import { ElementInterface, PageInterface, SumoguriContext } from '../interfaces'
 import { wait } from '../utils/wait'
 
-export class ScraperPage implements PageInterface {
+export class Page implements PageInterface {
   private context: SumoguriContext
   private scraper: SumoguriContext['scraper']
   private logger: SumoguriContext['logger']
@@ -25,11 +25,7 @@ export class ScraperPage implements PageInterface {
     for (let index = 0; index < contents.length; index++) {
       const content = contents[index]
       const element_selector = `${selector}:nth-of-type(${index + 1})`
-      const element = new ScraperElement(
-        element_selector,
-        content,
-        this.context
-      )
+      const element = new Element(element_selector, content, this.context)
 
       this.logger.debug(['page', 'action', selector, `${index}`], 'start')
       await onFound(element, index)

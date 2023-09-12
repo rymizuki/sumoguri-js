@@ -7,7 +7,7 @@ import {
 } from '../interfaces'
 import { Logger } from '../utils/logger'
 import { ScreenShot } from '../utils/screenshot'
-import { ScraperBrowser } from './browser'
+import { Browser } from './browser'
 
 export class Sumoguri implements SumoguriInterface {
   private defaults: SumoguriRunOptions
@@ -42,7 +42,7 @@ export class Sumoguri implements SumoguriInterface {
       })
       logger.debug('start scraping')
 
-      const browser = new ScraperBrowser({
+      const browser = new Browser({
         scraper,
         logger,
         options,

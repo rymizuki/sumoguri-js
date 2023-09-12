@@ -7,10 +7,10 @@ import {
   PageInterface,
   SumoguriContext
 } from '../interfaces'
-import { ScraperPage } from './page'
+import { Page } from './page'
 import { wait } from '../utils/wait'
 
-export class ScraperBrowser<Artifact = AbstractArtifact>
+export class Browser<Artifact = AbstractArtifact>
   implements BrowserInterface<Artifact>
 {
   private context: SumoguriContext
@@ -47,7 +47,7 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
     await this.scraper.goto(uri)
     await this.waitForTimeout()
 
-    const page = new ScraperPage(this.context)
+    const page = new Page(this.context)
     await onMoved(page)
     this.logger.debug(['browser'], 'move end', { uri })
   }

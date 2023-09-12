@@ -1,7 +1,7 @@
 import { AnyNode, Cheerio, CheerioAPI, load } from 'cheerio'
 import { ElementInterface, SumoguriContext } from '../interfaces'
 
-export class ScraperElement implements ElementInterface {
+export class Element implements ElementInterface {
   private contents: string
   private context: SumoguriContext
   private scraper: SumoguriContext['scraper']
