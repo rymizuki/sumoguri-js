@@ -8,6 +8,7 @@ import {
   SumoguriContext
 } from '../interfaces'
 import { ScraperPage } from './page'
+import { wait } from '../utils/wait'
 
 export class ScraperBrowser<Artifact = AbstractArtifact>
   implements BrowserInterface<Artifact>
@@ -15,7 +16,7 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
   private context: SumoguriContext
   private scraper: SumoguriContext['scraper']
   private logger: SumoguriContext['logger']
-  private timeout = 1 * 1000
+  private waitSeconds = 1
 
   constructor(context: SumoguriContext) {
     this.context = context
@@ -44,7 +45,7 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
     this.logger.debug(['browser'], 'move start', { uri })
     /* istanbul ignore next */
     await this.scraper.goto(uri)
-    await this.scraper.waitForTimeout(this.timeout)
+    await this.waitForTimeout()
 
     const page = new ScraperPage(this.context)
     await onMoved(page)
@@ -55,7 +56,7 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
     this.logger.debug(['browser'], 'goback start', {})
     /* istanbul ignore next */
     await this.scraper.goBack()
-    await this.scraper.waitForTimeout(this.timeout)
+    await this.waitForTimeout()
     this.logger.debug(['browser'], 'goback end', {})
   }
 
@@ -63,5 +64,9 @@ export class ScraperBrowser<Artifact = AbstractArtifact>
     /* istanbul ignore next */
     await this.scraper.close()
     this.logger.debug(['browser'], 'close')
+  }
+
+  private async waitForTimeout() {
+    return await wait(this.waitSeconds)
   }
 }

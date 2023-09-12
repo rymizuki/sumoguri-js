@@ -148,7 +148,7 @@ describe('Page', () => {
               // 現在時刻を記録（秒）
               const past = Math.floor(new Date().getTime() / 1000)
               // 5秒待つ
-              await page.wait(5 * 1000)
+              await page.wait(5)
               // 現在時刻を記録（秒）
               const now = Math.floor(new Date().getTime() / 1000)
               // past と prevの差が5秒

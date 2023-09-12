@@ -1,5 +1,6 @@
 import { ScraperElement } from './element'
 import { ElementInterface, PageInterface, SumoguriContext } from '../interfaces'
+import { wait } from '../utils/wait'
 
 export class ScraperPage implements PageInterface {
   private context: SumoguriContext
@@ -59,11 +60,7 @@ export class ScraperPage implements PageInterface {
       return
     }
     if (typeof input === 'number') {
-      await new Promise((resolve) =>
-        setTimeout(() => {
-          resolve(undefined)
-        }, input)
-      )
+      await wait(input)
       return
     }
   }

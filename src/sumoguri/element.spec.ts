@@ -86,7 +86,7 @@ describe('Element', () => {
             await page.action('form', async (element) => {
               await element.input(name, input)
               await element.click('button[type="submit"]')
-              await page.wait(0.5 * 1000)
+              await page.wait(0.5)
             })
           })
         })
