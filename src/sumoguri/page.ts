@@ -72,4 +72,8 @@ export class Page implements PageInterface {
     )
     return 0 < Number(count)
   }
+
+  async close() {
+    await this.scraper.close()
+  }
 }

@@ -128,6 +128,11 @@ export interface PageInterface {
    * @param selector
    */
   hasElement(selector: string): Promise<boolean>
+
+  /**
+   *
+   */
+  close(): Promise<void>
 }
 
 export interface ElementInterface {
