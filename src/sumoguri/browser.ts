@@ -52,6 +52,16 @@ export class Browser<Artifact = AbstractArtifact>
     this.logger.debug(['browser'], 'move end', { uri })
   }
 
+  async moveCurrentPopup() {
+    const pages = await this.scraper.browser().pages()
+    this.logger.debug(['browser'], 'popup', pages)
+    const popup = pages[pages.length - 1]
+    return new Page({
+      ...this.context,
+      scraper: popup
+    })
+  }
+
   async goBack(): Promise<void> {
     this.logger.debug(['browser'], 'goback start', {})
     /* istanbul ignore next */

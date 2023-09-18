@@ -79,6 +79,7 @@ export type BrowserInterface<Artifact = AbstractArtifact> = {
     path: string,
     onMoved: (page: PageInterface) => Promise<void>
   ): Promise<void>
+  moveCurrentPopup(): Promise<PageInterface>
   goBack(): Promise<void>
   close(): Promise<void>
 }
