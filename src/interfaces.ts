@@ -107,6 +107,18 @@ export interface PageInterface {
   ): Promise<void>
 
   /**
+   *
+   * @param selector
+   * @param Wrapper
+   * @param onFound
+   */
+  action<Element extends ElementInterface = ElementInterface>(
+    selector: string,
+    Wrapper: ElementConstructor<Element>,
+    onFound: PageActionFunction<Element>
+  ): Promise<void>
+
+  /**
    * DOMの描画を待つ
    * @param selector
    */
@@ -134,6 +146,14 @@ export interface PageInterface {
    */
   close(): Promise<void>
 }
+
+export type PageActionFunction<
+  Element extends ElementInterface = ElementInterface
+> = (element: Element, index: number) => Promise<void> | void
+
+export type ElementConstructor<
+  Element extends ElementInterface = ElementInterface
+> = new (source: string, content: string, context: SumoguriContext) => Element
 
 export interface ElementInterface {
   source: string
