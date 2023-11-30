@@ -1,5 +1,11 @@
 import { Element } from './element'
-import { ElementInterface, PageInterface, SumoguriContext } from '../interfaces'
+import {
+  ElementConstructor,
+  ElementInterface,
+  PageActionFunction,
+  PageInterface,
+  SumoguriContext
+} from '../interfaces'
 import { wait } from '../utils/wait'
 
 export class Page implements PageInterface {
@@ -13,10 +19,15 @@ export class Page implements PageInterface {
     this.logger = context.logger
   }
 
-  async action(
-    selector: string,
-    onFound: (element: ElementInterface, index: number) => Promise<void>
+  async action<E extends ElementInterface = ElementInterface>(
+    ...args:
+      | [string, PageActionFunction<Element>]
+      | [string, ElementConstructor<E>, PageActionFunction<E>]
   ): Promise<void> {
+    const selector = args[0]
+    const onFound = args[args.length - 1] as PageActionFunction<E | Element>
+    const ElementClass = args.length === 3 ? args[1] : Element
+
     this.logger.debug(['page', 'action', selector], 'start')
     /* istanbul ignore next */
     const contents = await this.scraper.$$eval(selector, (elements) => {
@@ -25,7 +36,7 @@ export class Page implements PageInterface {
     for (let index = 0; index < contents.length; index++) {
       const content = contents[index]
       const element_selector = `${selector}:nth-of-type(${index + 1})`
-      const element = new Element(element_selector, content, this.context)
+      const element = new ElementClass(element_selector, content, this.context)
 
       this.logger.debug(['page', 'action', selector, `${index}`], 'start')
       await onFound(element, index)
@@ -71,5 +82,9 @@ export class Page implements PageInterface {
       `document.querySelectorAll("${selector}").length`
     )
     return 0 < Number(count)
+  }
+
+  async close() {
+    await this.scraper.close()
   }
 }

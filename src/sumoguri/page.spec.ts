@@ -218,4 +218,18 @@ describe('Page', () => {
       })
     })
   })
+
+  describe('close', () => {
+    it('should be fail call page process', async () => {
+      const instance = vars.get('instance')
+      await instance.run(async (browser) => {
+        await browser.move('/example', async (page) => {
+          await page.close()
+          await expect(async () => {
+            await page.hasElement('body')
+          }).rejects.toThrow()
+        })
+      })
+    })
+  })
 })
