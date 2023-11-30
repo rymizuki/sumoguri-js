@@ -59,6 +59,7 @@ export class Sumoguri implements SumoguriInterface {
         // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
         logger.debug('end scraping', { artifact })
       } catch (error) {
+        /* istanbul ignore next */
         const message = error instanceof Error ? error.message : `${error}`
         logger.error(message, {
           href: await scraper.evaluate('location.href')

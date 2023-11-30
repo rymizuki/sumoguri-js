@@ -2,6 +2,7 @@ import { join } from 'path'
 import { createServer, createVariables } from '../test-lib'
 import { Sumoguri } from './sumoguri'
 import { BrowserTaskFunction, SumoguriRunOptions } from '../interfaces'
+import { Page } from './page'
 
 const vars = createVariables<{
   instance: Sumoguri
@@ -36,6 +37,16 @@ describe('Browser', () => {
           const uri = await page.getLocationPath()
           expect(uri).toBe(`${server.uri}/example`)
         })
+      })
+    })
+  })
+
+  describe('moveCurrentPopup', () => {
+    it('should be return Page instance', async () => {
+      const instance = vars.get('instance')
+      await instance.run(async (browser) => {
+        const popup = await browser.moveCurrentPopup()
+        expect(popup).toBeInstanceOf(Page)
       })
     })
   })
