@@ -1,6 +1,6 @@
 {
   "name": "sumoguri-js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A wrapper for puppeteer to explore complex websites.",
   "main": "dist/index.js",
   "scripts": {
