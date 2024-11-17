@@ -1,17 +1,17 @@
-# Sumoguri
+# Sumoguri.js
 
 A wrapper for puppeteer to explore complex websites.
 
 ## Installation
 
 ```
-npm install sumoguri
+npm install sumoguri-js
 ```
 
 ## Usage
 
 ```ts
-import { Sumoguri, BrowserTaskFunction } from 'sumoguri'
+import { Sumoguri, BrowserTaskFunction } from 'sumoguri-js'
 
 const sumoguri = new Sumoguri({
   origin: 'http://example.com/',

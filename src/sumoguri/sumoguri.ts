@@ -30,10 +30,12 @@ export class Sumoguri implements SumoguriInterface {
       args
     )
 
-    const logger = new Logger({
-      tags: ['scraper', options.pid],
-      level: options.logLevel
-    })
+    const logger =
+      options.logger ??
+      new Logger({
+        tags: ['scraper', options.pid],
+        level: options.logLevel
+      })
     await this.runOnScraper(options.puppeteer, async (scraper) => {
       const { screenshot_dirname, screenshot_prefix } = options
       const screenshot = new ScreenShot(scraper, {

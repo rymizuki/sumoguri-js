@@ -41,6 +41,7 @@ export type SumoguriRunOptions = {
   screenshot_prefix?: string
   screenshot_dirname?: string
   logLevel?: LoggerOptions['level']
+  logger?: LoggerInterface
   puppeteer?: PuppeteerLaunchOptions
 }
 
