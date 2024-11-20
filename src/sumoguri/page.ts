@@ -38,9 +38,17 @@ export class Page implements PageInterface {
       const element_selector = `${selector}:nth-of-type(${index + 1})`
       const element = new ElementClass(element_selector, content, this.context)
 
-      this.logger.debug(['page', 'action', selector, `${index}`], 'start')
-      await onFound(element, index)
-      this.logger.debug(['page', 'action', selector, `${index}`], 'end')
+      try {
+        this.logger.debug(['page', 'action', selector, `${index}`], 'start')
+        await onFound(element, index)
+      } catch (error) {
+        this.logger.error(
+          ['page', 'action', selector, `${index}`],
+          error instanceof Error ? error.stack : `Error: ${error}`
+        )
+      } finally {
+        this.logger.debug(['page', 'action', selector, `${index}`], 'end')
+      }
     }
     this.logger.debug(['page', 'action', selector], 'end')
   }
